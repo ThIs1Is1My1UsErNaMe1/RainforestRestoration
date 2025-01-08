@@ -1,0 +1,102 @@
+<!--Extend base template, and override any predefined blocks in base.html-->
+{% extends "base.html" %}
+<!--Override page title block-->
+{% block title %}Supervisor Bookings{% endblock %}
+{% block page_link %}
+<a class="nav-item nav-link" id="students" href="/students">Students</a>
+{% endblock %}
+<!--Overriding page content block below navbar-->
+{% block content %}
+<!--Show all accepted bookings-->
+<h1 align="center">Accepted bookings</h1>
+<table class="table table-bordered">
+   <thead>
+       <tr>
+           <th scope="col">Start time</th>
+           <th scope="col">End time</th>
+           <th scope="col">Number of people</th>
+           <th scope="col">Teacher email</th>
+       </tr>
+   </thead>
+   <tbody>
+       <!-- Check if there are any bookings -->
+       {% if user.supervisor_bookings %}
+           {% for booking in user.supervisor_bookings %}
+               <!-- Show accepted bookings and filter out those with date_time after today -->
+               {% if booking.supervisor_id == user.supervisor_id and booking.booking_status == 'a' and booking.start_time >= current_time %}
+               <tr>
+                   <td>{{ booking.start_time }}</td>
+                   <td>{{ booking.end_time }}</td>
+                   <td>{{ booking.no_of_people }}</td>
+                   <td>
+                       <!-- Find teacher email by matching booking.teacher_id with teacher.teacher_id -->
+                       {% for teacher in teachers %}
+                           {% if teacher.teacher_id == booking.teacher_id %}
+                               {{ teacher.teacher_email }}
+                           {% endif %}
+                       {% endfor %}
+                   </td>
+               </tr>
+               {% endif %}
+           {% endfor %}
+       {% else %}
+           <tr>
+               <td colspan="3">No bookings currently accepted</td>
+           </tr>
+       {% endif %}
+   </tbody>
+</table>
+
+
+<br/>
+
+
+<!--Show all pending bookings-->
+<h1 align="center">Pending bookings</h1>
+<table class="table table-bordered">
+   <thead>
+       <tr>
+           <th scope="col">Teacher email</th>
+           <th scope="col">Start time</th>
+           <th scope="col">End time</th>
+           <th scope="col">Number of people</th>
+           <th>Actions</th>
+       </tr>
+   </thead>
+   <tbody>
+       <!-- Check if there are any pending bookings -->
+       {% if user.supervisor_bookings %}
+           {% for booking in user.supervisor_bookings %}
+               <!-- Show pending bookings and filter out those with date_time after today -->
+               {% if booking.supervisor_id == user.supervisor_id and booking.booking_status == 'p' and booking.start_time >= current_time %}
+               <tr>
+                   <td>
+                       <!-- Find teacher email by matching booking.teacher_id with teacher.teacher_id -->
+                       {% for teacher in teachers %}
+                           {% if teacher.teacher_id == booking.teacher_id %}
+                               {{ teacher.teacher_email }}
+                           {% endif %}
+                       {% endfor %}
+                   </td>
+                   <td>{{ booking.start_time }}</td>
+                   <td>{{ booking.end_time }}</td>
+                   <td>{{ booking.no_of_people }}</td>
+                   <td>
+                       <!-- Accept Button -->
+                       <button type="button" class="btn btn-success" onClick="acceptBooking({{ booking.booking_id }})">Accept booking</button>
+                       <!-- Delete button -->
+                       <button class="btn btn-danger" onclick="rejectBooking({{ booking.booking_id }})">Reject booking</button>
+                   </td>
+               </tr>
+               {% endif %}
+           {% endfor %}
+       {% else %}
+           <tr>
+               <td colspan="4">No bookings currently pending</td>
+           </tr>
+       {% endif %}
+   </tbody>
+</table>
+
+
+{% endblock %}
