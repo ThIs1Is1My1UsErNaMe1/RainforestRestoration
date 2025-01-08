@@ -1,0 +1,140 @@
+<!--Extend base template, and override any predefined blocks in base.html-->
+{% extends "base.html" %}
+<!--Override page title block-->
+{% block title %}Teacher Home{% endblock %}
+<!--Overriding page content block below navbar-->
+{% block content %}
+<!--Show all accepted bookings-->
+<h1 align="center">Accepted bookings</h1>
+<table class="table table-bordered">
+   <thead>
+       <tr>
+           <th scope="col">Start time</th>
+           <th scope="col">End time</th>
+           <th scope="col">Number of People</th>
+           <th scope="col">Supervisor ID</th>
+           <th scope="col">Actions</th>
+       </tr>
+   </thead>
+   <tbody>
+       <!-- If there are bookings then loop through them and list them (using foreign key relationship from models.py) -->
+       {% if user.teacher_bookings %}
+           {% for booking in user.teacher_bookings %}
+               {% if booking.teacher_id == user.teacher_id and booking.booking_status == 'a' and booking.start_time >= current_time %}
+               <tr>
+                   <td>{{ booking.start_time }}</td>
+                   <td>{{ booking.end_time }}</td>
+                   <td>{{ booking.no_of_people }}</td>
+                   <td>{{ booking.supervisor_id }}</td>
+                   <td>
+                       <button type="button" class="btn btn-danger" onClick="deleteBooking({{ booking.booking_id }})">
+                           &times;
+                       </button>
+                   </td>
+               </tr>
+               {% endif %}
+           {% endfor %}
+       {% else %}
+           <tr>
+               <td colspan="4">No bookings currently accepted</td>
+           </tr>
+       {% endif %}
+   </tbody>
+</table>
+
+
+<br/>
+
+
+<!--Show all pending bookings-->
+<h1 align="center">Pending bookings</h1>
+<table class="table table-bordered">
+   <thead>
+       <tr>
+           <th scope="col">Start time</th>
+           <th scope="col">End time</th>
+           <th scope="col">Number of People</th>
+           <th scope="col">Supervisor ID</th>
+           <th scope="col">Actions</th>
+       </tr>
+   </thead>
+   <tbody>
+       <!-- If there are bookings then loop through them and list them (using foreign key relationship from models.py) -->
+       {% if user.teacher_bookings %}
+           {% for booking in user.teacher_bookings %}
+               {% if booking.teacher_id == user.teacher_id and booking.booking_status == 'p' and booking.start_time >= current_time %}
+               <tr>
+                   <td>{{ booking.start_time }}</td>
+                   <td>{{ booking.end_time }}</td>
+                   <td>{{ booking.no_of_people }}</td>
+                   <td>{{ booking.supervisor_id }}</td>
+                   <td>
+                       <button type="button" class="btn btn-danger" onClick="deleteBooking({{ booking.booking_id }})">
+                           &times;
+                       </button>
+                   </td>
+               </tr>
+               {% endif %}
+           {% endfor %}
+       {% else %}
+           <tr>
+               <td colspan="4">No bookings currently pending</td>
+           </tr>
+       {% endif %}
+   </tbody>
+</table>
+
+
+<br/>
+
+
+<!--Creating form to allow teacher to create bookings-->
+<form method="POST">
+   <input type="hidden" name="action" value="{{ action }}">
+
+
+   <div class="form-group">
+       <label for="start_time">Start Time:</label>
+       <input type="datetime-local" name="start_time" id="start_time" class="form-control" required value="{{ start_time }}">
+   </div>
+   <div class="form-group">
+       <label for="end_time">End Time:</label>
+       <input type="datetime-local" name="end_time" id="end_time" class="form-control" required value="{{ end_time }}">
+   </div>
+   <div class="form-group">
+       <label for="no_of_people">Number of People:</label>
+       <input type="number" name="no_of_people" id="no_of_people" class="form-control" required value="{{ no_of_people }}">
+   </div>
+   <div class="form-group">
+       <label for="supervisor_email">Supervisor Email:</label>
+       <select name="supervisor_email" id="supervisor_email" class="form-control" required>
+           <option value="" {% if not supervisor_email %}selected{% endif %}>Select a supervisor</option>
+           {% for supervisor in supervisors %}
+               <option value="{{ supervisor.supervisor_email }}"
+                   {% if supervisor_email == supervisor.supervisor_email %}selected{% endif %}>
+                   {{ supervisor.supervisor_email }}
+               </option>
+           {% endfor %}
+       </select>
+   </div>
+
+
+   {% if inventory_items %}
+       <h4>Available Inventory:</h4>
+       <div id="inventory-items">
+           {% for item in inventory_items %}
+               <div class="form-group">
+                   <label for="item_{{ item.item_id }}">{{ item.item_name }} (Available: {{ item.actual_amount }})</label>
+                   <input type="number" name="item_{{ item.item_id }}" id="item_{{ item.item_id }}" min="0" max="{{ item.actual_amount }}" class="form-control" placeholder="Enter quantity or leave empty">
+               </div>
+           {% endfor %}
+       </div>
+   {% endif %}
+
+
+   <br />
+   <button type="submit" class="btn btn-primary">{{ "Next" if action == "get_inventory" else "Create booking" }}</button>
+</form>
+
+
+{% endblock %}
