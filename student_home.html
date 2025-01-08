@@ -1,0 +1,73 @@
+{% extends "base.html" %}
+{% block title %}Student Home{% endblock %}
+{% block content %}
+
+
+{% if user.group_status == 'p' %}
+   <h1>Sorry, your supervisor has not accepted you in this service class yet</h1>
+
+
+{% elif user.group_status == 'r' %}
+   <h1>Your supervisor has rejected you from their service class</h1>
+   <p>If you would like to join a service class, please enter the email of a supervisor below:</p>
+   <form method="POST" action="/request-supervisor">
+       <div class="form-group">
+           <label for="supervisor_email">Supervisor Email</label>
+           <input type="email" class="form-control" id="supervisor_email" name="supervisor_email" required>
+       </div>
+       <button type="submit" class="btn btn-primary">Request to Join</button>
+   </form>
+
+
+{% elif user.group_status == 'a' %}
+   <h1>Inventory</h1>
+   <table class="table table-bordered">
+       <thead>
+           <tr>
+               <th scope="col">Item Name</th>
+               <th scope="col">Amount</th>
+               <th>Actions</th>
+           </tr>
+       </thead>
+       <tbody>
+           {% for item in matching_inventory %}
+               <tr class="{% if item.actual_amount < item.min_amount %}table-danger{% endif %}">
+                   <td>{{ item.item_name }}</td>
+                   <td>
+                       <input type="number" class="form-control" id="actual_amount_{{ item.item_id }}" value="{{ item.actual_amount }}">
+                   </td>
+                   <td>
+                       <button type="button" class="btn btn-success" onClick="studentApplyChanges({{ item.item_id }})">Apply Changes</button>
+                       <button class="btn btn-danger" onclick="studentDeleteItem({{ item.item_id }})">Delete</button>
+                   </td>
+               </tr>
+           {% endfor %}
+       </tbody>
+   </table>
+
+
+   <form method="POST">
+       <div class="form-group">
+           <label for="item_name">Item Name</label>
+           <input type="text" class="form-control" id="item_name" name="item_name" required>
+       </div>
+       <div class="form-group">
+           <label for="min_amount">Minimum Amount</label>
+           <input type="number" class="form-control" id="min_amount" name="min_amount" required>
+       </div>
+       <div class="form-group">
+           <label for="actual_amount">Actual Amount</label>
+           <input type="number" class="form-control" id="actual_amount" name="actual_amount" required>
+       </div>
+       <div class="form-group">
+           <label for="price_per_unit">Price per Unit</label>
+           <input type="text" class="form-control" id="price_per_unit" name="price_per_unit" required>
+       </div>
+       <button type="submit" class="btn btn-primary">Add Item</button>
+   </form>
+
+
+{% endif %}
+
+
+{% endblock %}
