@@ -1,0 +1,93 @@
+<!--extend base template, and override any predefined blocks in base.html-->
+{% extends "base.html" %}
+<!--Override page title block-->
+{% block title %}Supervisor Home{% endblock %}
+<!--Adding bookings button to supervisor navbar-->
+{% block page_link %}
+<a class="nav-item nav-link" id="bookings" href="/bookings">Bookings</a>
+<a class="nav-item nav-link" id="students" href="/students">Students</a>
+{% endblock %}
+<!--Overriding page content block below navbar-->
+{% block content %}
+<h1>Inventory</h1>
+<table class="table table-bordered">
+   <thead>
+       <tr>
+           <th scope="col">Item Name</th>
+           <th scope="col">Amount</th>
+           <th>Actions</th>
+       </tr>
+   </thead>
+   <tbody>
+       {% for item in user.supervisor_inventory %}
+           <tr class="{% if item.actual_amount < item.min_amount %}table-danger{% endif %}">
+               <td>{{ item.item_name }}</td>
+               <td>
+                   <!-- Input field for editing actual amount -->
+               <input type="number" class="form-control" id="actual_amount_{{ item.item_id }}" value="{{ item.actual_amount }}">
+               </td>
+               <td>
+                   <!-- Apply Changes Button -->
+                   <button type="button" class="btn btn-success" onClick="applyChanges({{ item.item_id }})">Apply Changes</button>
+                   <!-- Delete button -->
+                   <button class="btn btn-danger" onclick="deleteItem({{ item.item_id }})">Delete</button>
+               </td>
+           </tr>
+       {% endfor %}
+   </tbody>
+</table>
+
+
+<!-- Button to trigger heatmap generation -->
+<button type="button" class="btn btn-primary" id="generate-heatmap">Generate Value Distribution</button>
+
+
+<!-- Modal to display the heatmap and category details -->
+<div class="modal fade" id="heatmapModal" tabindex="-1" role="dialog" aria-labelledby="heatmapModalLabel" aria-hidden="true">
+ <div class="modal-dialog" role="document">
+   <div class="modal-content">
+     <div class="modal-header">
+       <h5 class="modal-title" id="heatmapModalLabel">Value Distribution Heatmap</h5>
+       <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+         <span aria-hidden="true">&times;</span>
+       </button>
+     </div>
+     <div class="modal-body">
+       <!-- Image for heatmap -->
+       <img id="heatmap-img" src="" alt="Heatmap" style="width: 100%; height: auto;">
+       <!-- Section for category details -->
+       <div id="heatmap-modal-body"></div>
+     </div>
+     <div class="modal-footer">
+       <!-- Display the total cost of all items -->
+       <div id="total-cost" class="mr-auto">
+           Total Inventory Cost: $<span id="total-cost-value"></span>
+       </div>
+       <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+     </div>
+   </div>
+ </div>
+</div>
+
+
+
+
+<form method="POST">
+   <div class="form-group">
+       <label for="item_name">Item Name</label>
+       <input type="text" class="form-control" id="item_name" name="item_name" required>
+   </div>
+   <div class="form-group">
+       <label for="min_amount">Minimum Amount</label>
+       <input type="number" class="form-control" id="min_amount" name="min_amount" required>
+   </div>
+   <div class="form-group">
+       <label for="actual_amount">Actual Amount</label>
+       <input type="number" class="form-control" id="actual_amount" name="actual_amount" required>
+   </div>
+   <div class="form-group">
+       <label for="price_per_unit">Price per Unit</label>
+       <input type="text" class="form-control" id="price_per_unit" name="price_per_unit" required>
+   </div>
+   <button type="submit" class="btn btn-primary">Add Item</button>
+</form>
