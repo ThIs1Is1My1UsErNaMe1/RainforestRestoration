@@ -1,0 +1,35 @@
+<!--extend base template, and override any predefined blocks in base.html-->
+{% extends "base.html" %}
+<!--Override page title block-->
+{% block title %}Sign up{% endblock %}
+<!--Overriding page content block below navbar-->
+{% block content %}
+<!--making sign_up form, send post request to backend-->
+<form method="POST">
+   <h3 align="center">Sign Up</h3>
+   <!--form-group is a bootstrap class-->
+   <div class="form-group">
+       <label for="email">Email Address</label>
+       <input type="email" class="form-control" id="email" name="email" placeholder="Enter email"/>
+       <!--the reason you need to define a name is because this is what the attribute is going to be called when the form passes this information into the backend-->
+   </div>
+   <div class="form-group">
+       <label for="fullName">Full Name</label>
+       <input type="text" class="form-control" id="fullName" name="fullName" placeholder="Enter full name"/>
+   </div>
+   <div class="form-group">
+       <label for="supervisor_email">Supervisor Email</label>
+       <input type="email" class="form-control" id="supervisor_email" name="supervisor_email" placeholder="Enter your service supervisor's email" required/>
+   </div>   
+   <div class="form-group">
+       <label for="password1">Password</label>
+       <input type="password" class="form-control" id="password1" name="password1" placeholder="Enter password"/>
+   </div>
+   <div class="form-group">
+       <label for="password2">Password (confirm)</label>
+       <input type="password" class="form-control" id="password2" name="password2" placeholder="Confirm password"/>
+   </div>
+   <br />
+   <button type="submit" class="btn btn-primary">Submit</button>
+</form>
+{% endblock %}
