@@ -1,0 +1,8 @@
+<!--extend base template, and override any predefined blocks in base.html-->
+{% extends "base.html" %}
+<!--Override page title block-->
+{% block title %}Home{% endblock %}
+<!--Overriding page content block below navbar-->
+{% block content %}
+<h1>This is the home page</h1>
+{% endblock %}
