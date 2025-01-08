@@ -1,0 +1,72 @@
+{% extends "base.html" %}
+{% block title %}Students{% endblock %}
+
+
+{% block page_link %}
+<a class="nav-item nav-link" id="bookings" href="/bookings">Bookings</a>
+{% endblock %}
+
+
+{% block content %}
+<div class="container">
+   <!-- Student members of your service table -->
+   <h3>Student Members of Your Service</h3>
+   <table class="table table-striped">
+       <thead>
+           <tr>
+               <th>Student Name</th>
+               <th>Student Email</th>
+               <th>Actions</th>
+           </tr>
+       </thead>
+       <tbody>
+           {% for student in student_members %}
+           <tr>
+               <td>{{ student.student_name }}</td>
+               <td>{{ student.student_email }}</td>
+               <td>
+                   <form method="POST" style="display:inline;">
+                       <input type="hidden" name="student_id" value="{{ student.student_id }}">
+                       <input type="hidden" name="action" value="delete">
+                       <button type="submit" class="btn btn-danger">Delete</button>
+                   </form>
+               </td>
+           </tr>
+           {% endfor %}
+       </tbody>
+   </table>
+
+
+   <!-- Pending members table -->
+   <h3>Pending Members</h3>
+   <table class="table table-striped">
+       <thead>
+           <tr>
+               <th>Student Name</th>
+               <th>Student Email</th>
+               <th>Actions</th>
+           </tr>
+       </thead>
+       <tbody>
+           {% for student in pending_members %}
+           <tr>
+               <td>{{ student.student_name }}</td>
+               <td>{{ student.student_email }}</td>
+               <td>
+                   <form method="POST" style="display:inline;">
+                       <input type="hidden" name="student_id" value="{{ student.student_id }}">
+                       <input type="hidden" name="action" value="accept">
+                       <button type="submit" class="btn btn-success">Accept</button>
+                   </form>
+                   <form method="POST" style="display:inline;">
+                       <input type="hidden" name="student_id" value="{{ student.student_id }}">
+                       <input type="hidden" name="action" value="reject">
+                       <button type="submit" class="btn btn-danger">Reject</button>
+                   </form>
+               </td>
+           </tr>
+           {% endfor %}
+       </tbody>
+   </table>
+</div>
+{% endblock %}
